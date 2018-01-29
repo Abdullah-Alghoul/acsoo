@@ -8,6 +8,7 @@ import os
 
 import click
 
+from .config import AcsooConfig
 from .main import main
 from .tools import call, check_call, check_output, working_directory
 
@@ -158,3 +159,15 @@ def tag_requirements(ctx, force, src, requirement, yes):
 
 
 main.add_command(tag_requirements)
+
+
+def _read_defaults(config):
+    section = 'tag_requirements'
+    defaults = dict(
+        pushable=config.getlist(
+            section, 'pushable', [('github.com', 'acsone')]),
+    )
+    return dict(tag_requirements=defaults)
+
+
+AcsooConfig.add_default_map_reader(_read_defaults)
