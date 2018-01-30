@@ -83,17 +83,18 @@ addons.add_command(addons_list_depends, 'list-depends')
               type=click.Path(dir_okay=False, exists=True))
 @click.option('--odoo-config', 'odoo_config',
               type=click.Path(dir_okay=False, exists=True))
-@click.option('--push', is_flag=True, default=False)
-@click.option('--branches', default='')
-@click.option('--user-name', 'user_name', default='')
-@click.option('--user-email', 'user_email', default='')
+@click.option('--git-push', 'git_push', is_flag=True, default=False)
+@click.option('---git-user-name', 'git_user_name', default='')
+@click.option('--git-user-email', 'git_user_email', default='')
+@click.option('--languages', default='')
+@click.option('--git-push-branch', 'git_push_branch', default='')
 @click.pass_context
-def makepot(ctx, database, odoo_bin, odoo_config, push, branches, user_name,
-            user_email):
+def makepot(ctx, database, odoo_bin, odoo_config, git_push, git_user_name,
+            git_user_email, languages, git_push_branch):
     addons = ctx.obj['addons']
-    branches = _split_set(branches)
-    do_makepot(database, odoo_bin, addons, odoo_config, push, branches,
-               user_name, user_email)
+    languages = _split_set(languages)
+    do_makepot(database, odoo_bin, addons, odoo_config, git_push,
+               git_user_name, git_user_email, languages, git_push_branch)
 
 
 addons.add_command(makepot)

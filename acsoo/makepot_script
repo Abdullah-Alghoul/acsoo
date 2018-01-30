@@ -10,7 +10,7 @@ module_name = "%(module_name)s"
 pot_file_path = "%(pot_file_path)s"
 module = self.env['ir.module.module'].search([('name', '=', module_name)])
 lang_export = self.env['base.language.export'].create({
-    'lang': '__new__',
+    'lang': "%(lang)s",
      'format': 'po',
      'modules': [(6, 0, [module.id])],
 })

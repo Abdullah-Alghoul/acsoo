@@ -1,0 +1,10 @@
+# -*- coding: utf-8 -*-
+# Copyright 2018 ACSONE SA/NV (<http://acsone.eu>)
+# License GPL-3.0 or later (http://www.gnu.org/licenses/gpl.html).
+
+vals = {
+    'lang': "%(lang)s",
+    'overwrite': True,
+}
+wiz = env['base.language.install'].create(vals)
+wiz.lang_install()

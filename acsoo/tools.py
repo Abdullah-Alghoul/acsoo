@@ -39,40 +39,27 @@ def tempinput(data):
         os.unlink(temp.name)
 
 
-def cmd_check_current_branch(branches):
-    current_branch = check_output(
-        ['git', 'rev-parse', '--abbrev-ref', 'HEAD'])
-    current_branch = current_branch.replace("\n", "")
-    if current_branch not in branches:
-        return False
-    else:
-        return True
-
-
-def cmd_push(paths_to_push, message, skip_ci=True, user_name='',
-             user_email=''):
-    out = check_output(['git', 'ls-files', '--other', '--exclude-standard',
-                        '--modified'])
-    list_out = out.splitlines()
-    items_to_remove = set([])
-    for item in paths_to_push:
-        if item not in list_out:
-            click.echo("No change on %s" % item)
-            items_to_remove.add(item)
-    to_push = set(paths_to_push) - items_to_remove
-    if to_push:
-        click.echo(out)
+def cmd_push(paths_to_push, message, skip_ci=True, git_user_name='',
+             git_user_email='', git_push_branch=None):
+    if paths_to_push:
         add_cmd = ['git', 'add']
         add_cmd.extend(paths_to_push)
         check_call(add_cmd)
         if skip_ci:
             message = "%s [ci skip]" % message
-        if user_name:
-            check_call(['git', 'config', 'user.name', user_name])
-        if user_email:
-            check_call(['git', 'config', 'user.email', user_email])
+        if git_user_name:
+            check_call(['git', 'config', 'user.name', git_user_name])
+        if git_user_email:
+            check_call(['git', 'config', 'user.email', git_user_email])
         check_call(['git', 'commit', '-m', message])
-        check_call(['git', 'push'])
+        if not git_push_branch:
+            git_push_branch = check_output(
+                ['git', 'rev-parse', '--abbrev-ref', 'HEAD'])
+            git_push_branch = git_push_branch.replace('\n', '')
+        if call(['git', 'show-ref', '--heads', git_push_branch]):
+            click.echo('%s not a branch : skipping ...' % git_push_branch)
+        else:
+            check_call(['git', 'push'])
     else:
         click.echo('Nothing to push')
 
