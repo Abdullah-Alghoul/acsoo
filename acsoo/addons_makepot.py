@@ -69,7 +69,6 @@ def do_makepot(database, odoo_bin, installable_addons, odoo_config, git_push,
             module_cmd = script_cmd % kwargs
             proc.stdin.write(module_cmd)
             files_to_push.append(pot_file_path)
-        break
     proc.stdin.close()
     out = proc.stdout.read()
     click.echo(out)
