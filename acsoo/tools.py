@@ -7,6 +7,8 @@ import logging
 import os
 import subprocess
 import sys
+import tempfile
+from contextlib import contextmanager
 from distutils.spawn import find_executable as _fe
 
 import click
@@ -24,6 +26,50 @@ def _escape(s):
     s = s.replace('<', '\\<')
     s = s.replace(' ', '\\ ')
     return s
+
+
+@contextmanager
+def tempinput(data):
+    temp = tempfile.NamedTemporaryFile(delete=False)
+    temp.write(data)
+    temp.close()
+    try:
+        yield temp.name
+    finally:
+        os.unlink(temp.name)
+
+
+def cmd_check_current_branch(branches):
+    current_branch = check_output(
+        ['git', 'rev-parse', '--abbrev-ref', 'HEAD'])
+    current_branch = current_branch.replace("\n", "")
+    if current_branch not in branches:
+        return False
+    else:
+        return True
+
+
+def cmd_push(paths_to_push, message, skip_ci=True):
+    out = check_output(['git', 'ls-files', '--other', '--exclude-standard',
+                        '--modified'])
+    list_out = out.splitlines()
+    items_to_remove = set([])
+    for item in paths_to_push:
+        if item not in list_out:
+            click.echo("No change on %s" % item)
+            items_to_remove.add(item)
+    to_push = set(paths_to_push) - items_to_remove
+    if to_push:
+        click.echo(out)
+        add_cmd = ['git', 'add']
+        add_cmd.extend(paths_to_push)
+        check_call(add_cmd)
+        if skip_ci:
+            message = "%s [ci skip]" % message
+        check_call(['git', 'commit', '-m', message])
+        check_call(['git', 'push'])
+    else:
+        click.echo('Nothing to push')
 
 
 def cmd_string(cmd):

@@ -6,6 +6,7 @@ import click
 
 from .main import main
 from .manifest import get_installable_addons
+from .addons_makepot import do_makepot
 
 
 def _split_set(csv):
@@ -74,3 +75,21 @@ def addons_list_depends(ctx, exclude):
 
 
 addons.add_command(addons_list_depends, 'list-depends')
+
+
+@click.command()
+@click.option('--database')
+@click.option('--odoo-bin', 'odoo_bin', default='odoo',
+              type=click.Path(dir_okay=False, exists=True))
+@click.option('--odoo-config', 'odoo_config',
+              type=click.Path(dir_okay=False, exists=True))
+@click.option('--push', is_flag=True, default=False)
+@click.option('--branches', default='')
+@click.pass_context
+def makepot(ctx, database, odoo_bin, odoo_config, push, branches):
+    addons = ctx.obj['addons']
+    branches = _split_set(branches)
+    do_makepot(database, odoo_bin, addons, odoo_config, push, branches)
+
+
+addons.add_command(makepot)
