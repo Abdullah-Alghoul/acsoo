@@ -49,7 +49,8 @@ def cmd_check_current_branch(branches):
         return True
 
 
-def cmd_push(paths_to_push, message, skip_ci=True):
+def cmd_push(paths_to_push, message, skip_ci=True, user_name='',
+             user_email=''):
     out = check_output(['git', 'ls-files', '--other', '--exclude-standard',
                         '--modified'])
     list_out = out.splitlines()
@@ -66,6 +67,10 @@ def cmd_push(paths_to_push, message, skip_ci=True):
         check_call(add_cmd)
         if skip_ci:
             message = "%s [ci skip]" % message
+        if user_name:
+            check_call(['git', 'config', 'user.name', user_name])
+        if user_email:
+            check_call(['git', 'config', 'user.email', user_email])
         check_call(['git', 'commit', '-m', message])
         check_call(['git', 'push'])
     else:

@@ -10,7 +10,7 @@ from .checklog import do_checklog
 
 
 def do_makepot(database, odoo_bin, installable_addons, odoo_config, push,
-               branches):
+               branches, user_name, user_email):
     if push and branches:
         if not cmd_check_current_branch(branches):
             click.echo('acsoo addons makepot : Current branch ignored')
@@ -63,4 +63,5 @@ def do_makepot(database, odoo_bin, installable_addons, odoo_config, push,
                 else:
                     raise e
     if push:  # Add condition
-        cmd_push(files_to_push, "Update POT files")
+        cmd_push(files_to_push, "Update POT files", user_name=user_name,
+                 user_email=user_email)
