@@ -81,7 +81,7 @@ def do_makepot(database, odoo_bin, installable_addons, odoo_config, git_push,
                     pass
                 else:
                     raise e
-    if git_push:  # Add condition
+    if git_push:
         cmd_push(files_to_push, "Update translation files",
                  git_user_name=git_user_name, git_user_email=git_user_email,
                  git_push_branch=git_push_branch)

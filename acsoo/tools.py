@@ -56,7 +56,7 @@ def cmd_push(paths_to_push, message, skip_ci=True, git_user_name='',
             git_push_branch = check_output(
                 ['git', 'rev-parse', '--abbrev-ref', 'HEAD'])
             git_push_branch = git_push_branch.replace('\n', '')
-        if not call(
+        if not check_output(
                 ['git', 'ls-remote', '--heads', 'origin', git_push_branch]):
             click.echo('%s not a branch : skipping ...' % git_push_branch)
         else:
