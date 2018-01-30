@@ -84,7 +84,7 @@ addons.add_command(addons_list_depends, 'list-depends')
 @click.option('--odoo-config', 'odoo_config',
               type=click.Path(dir_okay=False, exists=True))
 @click.option('--git-push', 'git_push', is_flag=True, default=False)
-@click.option('---git-user-name', 'git_user_name', default='')
+@click.option('--git-user-name', 'git_user_name', default='')
 @click.option('--git-user-email', 'git_user_email', default='')
 @click.option('--languages', default='')
 @click.option('--git-push-branch', 'git_push_branch', default='')
