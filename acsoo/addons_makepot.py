@@ -33,10 +33,12 @@ def do_makepot(database, odoo_bin, installable_addons, odoo_config, push,
         stderr=subprocess.STDOUT)
     with open(script_path) as f:
         script_cmd = f.read()
-    pot_files_path = []
+    files_to_push = []
     for addon_name, (addon_dir, manifest) in installable_addons.items():
-        module_path = os.path.join(addon_dir, addon_name)
-        i18n_path = os.path.join(module_path, 'i18n')
+        if os.path.islink(addon_dir):
+            click.echo("Module %s ignored : symlink" % addon_name)
+            continue
+        i18n_path = os.path.join(addon_dir, 'i18n')
         if not os.path.isdir(i18n_path):
             os.makedirs(i18n_path)
         file_name = addon_name + '.pot'
@@ -47,7 +49,7 @@ def do_makepot(database, odoo_bin, installable_addons, odoo_config, push,
         }
         module_cmd = script_cmd % kwargs
         proc.stdin.write(module_cmd)
-        pot_files_path.append(pot_file_path)
+        files_to_push.append(pot_file_path)
     proc.stdin.close()
     out = proc.stdout.read()
     click.echo(out)
@@ -61,4 +63,4 @@ def do_makepot(database, odoo_bin, installable_addons, odoo_config, push,
                 else:
                     raise e
     if push:  # Add condition
-        cmd_push(pot_files_path, "Update POT files")
+        cmd_push(files_to_push, "Update POT files")
