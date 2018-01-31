@@ -39,18 +39,14 @@ def tempinput(data):
         os.unlink(temp.name)
 
 
-def cmd_push(paths_to_push, message, skip_ci=True, git_user_name='',
-             git_user_email='', git_push_branch=None, git_remote_url=None):
+def cmd_push(paths_to_push, message, skip_ci=True, git_push_branch=None,
+             git_remote_url=None):
     if paths_to_push:
         add_cmd = ['git', 'add']
         add_cmd.extend(paths_to_push)
         check_call(add_cmd)
         if skip_ci:
             message = "%s [ci skip]" % message
-        if git_user_name:
-            check_call(['git', 'config', 'user.name', git_user_name])
-        if git_user_email:
-            check_call(['git', 'config', 'user.email', git_user_email])
         check_call(['git', 'commit', '-m', message])
         if not git_push_branch:
             git_push_branch = check_output(

@@ -12,8 +12,7 @@ NEW_LANGUAGE = '__new__'
 
 
 def do_makepot(database, odoo_bin, installable_addons, odoo_config, git_push,
-               git_user_name, git_user_email, languages, git_push_branch,
-               git_remote_url):
+               languages, git_push_branch, git_remote_url):
     if not languages:
         languages = [NEW_LANGUAGE]
     odoo_shell_cmd = [
@@ -84,6 +83,5 @@ def do_makepot(database, odoo_bin, installable_addons, odoo_config, git_push,
                     raise e
     if git_push:
         cmd_push(files_to_push, "Update translation files",
-                 git_user_name=git_user_name, git_user_email=git_user_email,
                  git_push_branch=git_push_branch,
                  git_remote_url=git_remote_url)
