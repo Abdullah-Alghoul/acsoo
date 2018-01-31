@@ -88,13 +88,15 @@ addons.add_command(addons_list_depends, 'list-depends')
 @click.option('--git-user-email', 'git_user_email', default='')
 @click.option('--languages', default='')
 @click.option('--git-push-branch', 'git_push_branch', default='')
+@click.option('--git-remote-url', 'git_remote_url', default='')
 @click.pass_context
 def makepot(ctx, database, odoo_bin, odoo_config, git_push, git_user_name,
-            git_user_email, languages, git_push_branch):
+            git_user_email, languages, git_push_branch, git_remote_url):
     addons = ctx.obj['addons']
     languages = _split_set(languages)
     do_makepot(database, odoo_bin, addons, odoo_config, git_push,
-               git_user_name, git_user_email, languages, git_push_branch)
+               git_user_name, git_user_email, languages, git_push_branch,
+               git_remote_url)
 
 
 addons.add_command(makepot)
