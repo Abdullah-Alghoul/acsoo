@@ -66,7 +66,7 @@ def cmd_push(paths_to_push, message, skip_ci=True, git_push_branch=None,
             check_call(['git', 'push', 'origin', 'HEAD:%s' % git_push_branch])
             if git_remote_url:
                 check_call(['git', 'remote', 'set-url', 'origin', old_origin])
-                click.echo('Restore remote origin to %s ...' % git_remote_url)
+                click.echo('Restore remote origin ...')
     else:
         click.echo('Nothing to push')
 
