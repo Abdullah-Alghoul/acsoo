@@ -56,10 +56,12 @@ def cmd_push(paths_to_push, message, skip_ci=True, git_user_name='',
             git_push_branch = check_output(
                 ['git', 'rev-parse', '--abbrev-ref', 'HEAD'])
             git_push_branch = git_push_branch.replace('\n', '')
+        click.echo('-- %s ...' % git_remote_url)
         if git_remote_url:
             old_origin = check_output(['git', 'remote', 'get-url', 'origin'])
             old_origin = old_origin.replace('\n', '')
             check_call(['git', 'remote', 'set-url', 'origin', git_remote_url])
+            click.echo('Change remote origin to %s ...' % git_remote_url)
         if not check_output(
                 ['git', 'ls-remote', '--heads', 'origin', git_push_branch]):
             click.echo('%s not a branch : skipping ...' % git_push_branch)
@@ -68,6 +70,7 @@ def cmd_push(paths_to_push, message, skip_ci=True, git_user_name='',
             check_call(['git', 'push', 'origin', git_push_branch])
             if git_remote_url:
                 check_call(['git', 'remote', 'set-url', 'origin', old_origin])
+                click.echo('Restore remote origin to %s ...' % git_remote_url)
     else:
         click.echo('Nothing to push')
 
