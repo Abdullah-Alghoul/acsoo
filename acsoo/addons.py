@@ -97,7 +97,6 @@ def makepot(ctx, database, odoo_bin, odoo_config, git_commit, git_push,
             '10.0': 'odoo'
         }
         odoo_bin = bin.get(config.series, None)
-    click.echo('%s' % odoo_bin)
     addons = ctx.obj['addons']
     languages = _split_set(languages)
     do_makepot(database, odoo_bin, addons, odoo_config, git_commit, git_push,

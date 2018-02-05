@@ -5,6 +5,7 @@
 import os
 import subprocess
 import click
+import time
 from .tools import cmd_commit, cmd_push, tempinput
 from .checklog import do_checklog
 
@@ -52,8 +53,6 @@ def do_makepot(database, odoo_bin, installable_addons, odoo_config, git_commit,
             click.echo("Module %s ignored : symlink" % addon_name)
             continue
         i18n_path = os.path.join(addon_dir, 'i18n')
-        if not os.path.isdir(i18n_path):
-            os.makedirs(i18n_path)
         for lang in languages:
             if lang == NEW_LANGUAGE:
                 file_name = '%s.pot' % addon_name
@@ -64,13 +63,19 @@ def do_makepot(database, odoo_bin, installable_addons, odoo_config, git_commit,
                 'module_name': addon_name,
                 'pot_file_path': pot_file_path,
                 'lang': lang,
+                'i18n_path': i18n_path,
             }
             module_cmd = script_cmd % kwargs
             proc.stdin.write(module_cmd)
-            if os.path.exists(pot_file_path):
-                files_to_commit.append(pot_file_path)
+            files_to_commit.append(pot_file_path)
     proc.stdin.close()
     out = proc.stdout.read()
+    proc.wait()
+    file_to_remove = set([])
+    for file in files_to_commit:
+        if not os.path.exists(file):
+            file_to_remove.add(file)
+    files_to_commit = set(files_to_commit) - file_to_remove
     click.echo(out)
     if out:
         with tempinput(out) as tempfilename:
