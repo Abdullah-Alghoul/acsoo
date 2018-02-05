@@ -5,14 +5,14 @@
 import os
 import subprocess
 import click
-from .tools import cmd_push, tempinput
+from .tools import cmd_commit, cmd_push, tempinput
 from .checklog import do_checklog
 
 NEW_LANGUAGE = '__new__'
 
 
-def do_makepot(database, odoo_bin, installable_addons, odoo_config, git_push,
-               languages, git_push_branch, git_remote_url):
+def do_makepot(database, odoo_bin, installable_addons, odoo_config, git_commit,
+               git_push, languages, git_push_branch, git_remote_url):
     if not languages:
         languages = [NEW_LANGUAGE]
     odoo_shell_cmd = [
@@ -37,7 +37,6 @@ def do_makepot(database, odoo_bin, installable_addons, odoo_config, git_push,
     for lang in languages:
         if lang == NEW_LANGUAGE:
             continue
-        # TODO : check if the lang is already installed ?
         lang_kwargs = {
             'lang': lang,
         }
@@ -47,7 +46,7 @@ def do_makepot(database, odoo_bin, installable_addons, odoo_config, git_push,
     script_path = os.path.join(script_dir, 'makepot_script')
     with open(script_path) as f:
         script_cmd = f.read()
-    files_to_push = []
+    files_to_commit = []
     for addon_name, (addon_dir, manifest) in installable_addons.items():
         if os.path.islink(addon_dir):
             click.echo("Module %s ignored : symlink" % addon_name)
@@ -68,7 +67,8 @@ def do_makepot(database, odoo_bin, installable_addons, odoo_config, git_push,
             }
             module_cmd = script_cmd % kwargs
             proc.stdin.write(module_cmd)
-            files_to_push.append(pot_file_path)
+            if os.path.exists(pot_file_path):
+                files_to_commit.append(pot_file_path)
     proc.stdin.close()
     out = proc.stdout.read()
     click.echo(out)
@@ -81,7 +81,9 @@ def do_makepot(database, odoo_bin, installable_addons, odoo_config, git_push,
                     pass
                 else:
                     raise e
+    if git_commit or git_push:
+        cmd_commit(files_to_commit, "Update translation files")
+
     if git_push:
-        cmd_push(files_to_push, "Update translation files",
-                 git_push_branch=git_push_branch,
+        cmd_push(git_push_branch=git_push_branch,
                  git_remote_url=git_remote_url)

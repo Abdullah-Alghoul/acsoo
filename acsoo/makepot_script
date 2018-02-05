@@ -8,13 +8,22 @@ from os.path import join
 
 module_name = "%(module_name)s"
 pot_file_path = "%(pot_file_path)s"
-module = self.env['ir.module.module'].search([('name', '=', module_name)])
-lang_export = self.env['base.language.export'].create({
-    'lang': "%(lang)s",
-     'format': 'po',
-     'modules': [(6, 0, [module.id])],
-})
-lang_export.act_getfile()
+iso_code =  "%(lang)s"
+locale_code = iso_code
+module = self.env['ir.module.module'].search([
+    ('name', '=', module_name),
+    ('state', '=', 'installed'),
+])
+if module:
+    if iso_code != '__new__':
+        lang = env['res.lang'].search([('iso_code', '=', iso_code), ('active', '>=', 0)], limit=1)
+        locale_code = lang.code
+    lang_export = self.env['base.language.export'].create({
+         'lang': locale_code,
+         'format': 'po',
+         'modules': [(6, 0, [module.id])],
+    })
+    lang_export.act_getfile()
 
-with open(pot_file_path, 'w') as pot_file:
-    pot_file.write(base64.decodestring(lang_export.data))
+    with open(pot_file_path, 'w') as pot_file:
+        pot_file.write(base64.decodestring(lang_export.data))
